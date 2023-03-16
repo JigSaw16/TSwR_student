@@ -15,6 +15,8 @@ class ManiuplatorModel:
         self.m3 = 0.0
         self.r3 = 0.01
         self.I_3 = 2. / 5 * self.m3 * self.r3 ** 2
+        self.d1 = self.l1 / 2
+        self.d2 = self.l2 / 2
 
     def M(self, x):
         """
@@ -22,12 +24,34 @@ class ManiuplatorModel:
         (2DoF planar manipulator with the object at the tip)
         """
         q1, q2, q1_dot, q2_dot = x
-        return NotImplementedError()
 
+        alpha = self.I_1 + self.I_2 + self.I_3 + self.d1 ** 2 * self.m1 + self.m2 * (self.d2 ** 2 + self.l2 ** 2) + self.m3 * (self.l1 ** 2 + self.l2 ** 2)
+        beta = self.d2 * self.l1 * self.m2 + self.l1 * self.l2 * self.m3
+        gamma = self.I_2 + self.I_3 + self.d2 ** 2 * self.m2 + self.l2 ** 2 * self.m3
+
+        m11 = alpha + 2*beta*np.cos(q2)
+        m12 = gamma + beta*np.cos(q2)
+        m21 = gamma + beta*np.cos(q2)
+        m22 = gamma
+
+        M = np.array([[m11, m12], [m21, m22]])
+
+        return M
+    
     def C(self, x):
         """
         Please implement the calculation of the Coriolis and centrifugal forces matrix, according to the model derived
         in the exercise (2DoF planar manipulator with the object at the tip)
         """
         q1, q2, q1_dot, q2_dot = x
-        return NotImplementedError()
+
+        beta = self.d2 * self.l1 * self.m2 + self.l1 * self.l2 * self.m3
+
+        c11 = -beta * np.sin(q2) * q2_dot
+        c12 = -beta * np.sin(q2) * (q1_dot + q2_dot)
+        c21 = beta * np.sin(q2) * q1_dot
+        c22 = 0
+
+        C = np.array([[c11, c12], [c21, c22]])
+
+        return C
