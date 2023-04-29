@@ -6,8 +6,8 @@ from .controller import Controller
 class FeedbackLinearizationController(Controller):
     def __init__(self, Tp):
         self.model = ManiuplatorModel(Tp)
-        self.Kd = np.array([[50, 0], [0, 50]])
-        self.Kp = np.array([[50, 0], [0, 50]])
+        self.Kd = np.array([[50, 0], [0, 25]])
+        self.Kp = np.array([[15, 0], [0, 70]])
 
     def calculate_control(self, x, q_r, q_r_dot, q_r_ddot):
         """
